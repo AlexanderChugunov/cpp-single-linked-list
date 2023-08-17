@@ -45,6 +45,7 @@ class SingleLinkedList {
 
 
         BasicIterator& operator++() noexcept {
+            assert(ptr_ != nullptr);
             ptr_ = ptr_->next_node;
             return *this;
         }
@@ -54,11 +55,13 @@ class SingleLinkedList {
             return iterator;
         }
         [[nodiscard]] reference operator*() const noexcept {
+            assert(ptr_ != nullptr);
             return ptr_->value;
         }
 
 
         [[nodiscard]] pointer operator->() const noexcept {
+            assert(ptr_ != nullptr);
             return &ptr_->value;
         }
 
@@ -102,26 +105,20 @@ public:
         size_ = 0;
     }
 SingleLinkedList(std::initializer_list<Type> values) {
-        SingleLinkedList tmp;
-        auto it = values.begin();
-        
-        Node** node_ptr = &tmp.head_.next_node;
-        while(it != values.end()) {
-        *node_ptr = new Node(*it, nullptr);// выделяем память и копируем
-        node_ptr = &((*node_ptr)->next_node);// переходим к следующему узлу
-        ++it;
-        ++tmp.size_;
-        }
-        swap(tmp);
+    Create(values.begin(), values.end());
 
     }
  
     SingleLinkedList(const SingleLinkedList& other) {
+        Create(other.begin(), other.end());
+    }
+    template <typename InputIterator>
+    void Create(InputIterator begin_, InputIterator end_) {
         SingleLinkedList tmp;
-        auto it = other.begin();
+        auto it = begin_;
         
         Node** node_ptr = &tmp.head_.next_node;
-        while(it != other.end()) {
+        while(it != end_) {
         *node_ptr = new Node(*it, nullptr);// выделяем память и копируем
         node_ptr = &((*node_ptr)->next_node);// переходим к следующему узлу
         ++it;
@@ -129,7 +126,6 @@ SingleLinkedList(std::initializer_list<Type> values) {
         }
         swap(tmp);
     }
- 
     SingleLinkedList& operator=(const SingleLinkedList& rhs) {
         assert(head_.next_node != rhs.head_.next_node);
         SingleLinkedList temp(rhs);
@@ -182,12 +178,16 @@ SingleLinkedList(std::initializer_list<Type> values) {
 
 
     Iterator InsertAfter(ConstIterator iter, const Type& value) {
+        assert(iter.ptr_ != nullptr);
         iter.ptr_->next_node = new Node(value, iter.ptr_->next_node);
         ++size_;
         return Iterator{ iter.ptr_->next_node };
     }
 
     Iterator EraseAfter(ConstIterator iter) noexcept {
+        assert(!IsEmpty());
+        assert(iter.ptr_ != nullptr);
+        assert(iter.ptr_->next_node != nullptr);
         Node* temp = iter.ptr_->next_node->next_node;
         delete iter.ptr_->next_node;
         iter.ptr_->next_node = temp;
