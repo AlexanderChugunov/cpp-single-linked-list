@@ -104,8 +104,8 @@ public:
         }
         size_ = 0;
     }
-SingleLinkedList(std::initializer_list<Type> values) {
-    Create(values.begin(), values.end());
+    SingleLinkedList(std::initializer_list<Type> values) {
+        Create(values.begin(), values.end());
 
     }
  
